@@ -1,0 +1,11 @@
+# Local dev environment
+.vscode/
+
+# deployment environments
+.now/
+
+# dependency directories
+node_modules/
+
+# Generated distribution directories
+build/
