@@ -2,6 +2,7 @@
 .vscode/
 
 # deployment environments
+.next/
 .now/
 
 # dependency directories
