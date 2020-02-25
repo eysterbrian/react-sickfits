@@ -10,11 +10,6 @@ import Link from 'next/link';
 const Home = props => (
   <div>
     <p>Greetings from 3rd Home!</p>
-    <p>
-      <Link href="/sell">
-        <a>To Sell...</a>
-      </Link>
-    </p>
   </div>
 );
 
