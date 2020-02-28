@@ -22,6 +22,7 @@ const NavStyles = styled.ul`
       font-size: 10px;
       padding: 0 10px;
     }
+    /* Create the slanted grey line to left of each nav item */
     &:before {
       content: '';
       width: 2px;
@@ -33,13 +34,16 @@ const NavStyles = styled.ul`
       top: 0;
       bottom: 0;
     }
+    /* Create red underline that appears and appears on hover */
     &:after {
       height: 2px;
       background: red;
       content: '';
+      /* Width is normally 0, but expands on :hover */
       width: 0;
       position: absolute;
       transform: translateX(-50%);
+      /* Animate change in the width */
       transition: width 0.4s;
       transition-timing-function: cubic-bezier(1, -0.65, 0, 2.31);
       left: 50%;
@@ -49,11 +53,12 @@ const NavStyles = styled.ul`
     &:focus {
       outline: none;
       &:after {
+        /* On :hover we'll extend the width of the red line, leaving 30px on left/right side */
         width: calc(100% - 60px);
       }
-    @media (max-width: 700px) {
+      @media (max-width: 700px) {
         width: calc(100% - 10px);
-    }
+      }
     }
   }
   @media (max-width: 1300px) {
