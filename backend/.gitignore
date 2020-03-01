@@ -1,6 +1,9 @@
 # Local dev environment
 .vscode/
 
+# sensitive env files
+*.env
+
 # deployment environments
 .now/
 
