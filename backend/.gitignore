@@ -6,6 +6,7 @@
 
 # deployment environments
 .now/
+.next/
 
 # dependency directories
 node_modules/
