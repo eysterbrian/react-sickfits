@@ -1,21 +1,29 @@
-// let's go!
+//
+// Main entrypoint for the backend server
+//
 require('dotenv').config({ path: 'variables.env' });
 
-const createServer = require('./createServer');
+// Connect to our DB using prisma-binding to our Prisma DB
 const db = require('./db');
 
+// Create the yoga (express) server
+const createServer = require('./createServer'); // graphql-yoga
 const server = createServer();
 
 // TODO: Use express middlware to handle cookies (JWT)
 // TODO: Use express middleware to populate current user
 
-server.start(
-  {
-    cors: {
-      credentials: true,
-      origin: process.env.FRONTEND_URL,
-    },
+const yogaOptions = {
+  cors: {
+    credentials: true,
+    origin: process.env.FRONTEND_URL, // only allow API access from our frontend URL
   },
+};
+
+server.start(
+  yogaOptions,
+
+  // CB called right before the server starts
   ({ port }) => {
     console.log(`Server is now running at: http://localhost:${port}`);
   }
