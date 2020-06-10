@@ -1,11 +1,16 @@
-type Dog {
-  name: String!
-}
+# Sketchy way that Prisma handles imports from another .graphql file...
+# import * from './generated/prisma.graphql'
 
 type Mutation {
-  createDog(name: String): Dog!
+  createItem(
+    title: String
+    description: String
+    priceCents: Int
+    image: String
+    largeImage: String
+  ): Item!
 }
 
 type Query {
-  dogs: [Dog]!
+  items: [Item]!
 }

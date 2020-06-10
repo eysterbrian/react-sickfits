@@ -1,11 +1,17 @@
 const Mutation = {
-  createDog: function(parent, args, ctx, info) {
-    console.log(args);
-    if (!global.dogs) global.dogs = [];
+  createItem: async function(parent, args, ctx, info) {
+    // TODO: Check that the user is logged-in
 
-    const newDog = { name: args.name };
-    global.dogs.push(newDog);
-    return newDog;
+    // Call the Prisma DB mutation
+    const item = await ctx.db.mutation.createItem({
+      // Create data object from our args
+      data: {
+        // We're using spread here so we can later add some additional params to data
+        ...args,
+      },
+    });
+
+    return item;
   },
 };
 
