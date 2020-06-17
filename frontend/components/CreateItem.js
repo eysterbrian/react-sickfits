@@ -41,6 +41,27 @@ export default class CreateItem extends React.Component {
     this.setState({ [name]: val });
     console.log({ name, type, value });
   };
+
+  uploadFile = async (e) => {
+    console.log('Uploading file...');
+    const files = e.target.files;
+
+    const data = new FormData();
+    data.append('file', files[0]);
+    data.append('upload_preset', 'brianfits');
+
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/eysterbrian/image/upload',
+      { method: 'POST', body: data }
+    );
+    const file = await res.json();
+    // console.log(file);
+    this.setState({
+      image: file.secure_url,
+      largeImage: file.eager[0].secure_url,
+    });
+  };
+
   render() {
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
@@ -50,10 +71,8 @@ export default class CreateItem extends React.Component {
             onSubmit={async (e) => {
               // Stop the form from submitting
               e.preventDefault();
-              console.log(this.state);
               // Call the mutation
               const res = await createItemFn();
-              console.log(res.data);
 
               // Redirect to the single item page
               Router.push({
@@ -75,6 +94,21 @@ export default class CreateItem extends React.Component {
                   onChange={this.handleChange}
                   value={this.state.title}
                 />
+              </label>
+
+              <label htmlFor="file">
+                Image
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  placeholder="Image"
+                  required
+                  onChange={this.uploadFile}
+                />
+                {this.state.image && (
+                  <img src={this.state.image} width="200" alt="Image Preview" />
+                )}
               </label>
 
               <label htmlFor="priceCents">
