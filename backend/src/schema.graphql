@@ -14,6 +14,8 @@ type Mutation {
     title: String
     description: String
     priceCents: Int
+    image: String
+    largeImage: String
   ): Item!
 }
 

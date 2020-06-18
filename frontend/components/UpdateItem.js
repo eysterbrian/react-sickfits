@@ -13,6 +13,8 @@ const SINGLE_ITEM_QUERY = gql`
       title
       description
       priceCents
+      image
+      largeImage
     }
   }
 `;
@@ -23,12 +25,16 @@ const UPDATE_ITEM_MUTATION = gql`
     $title: String
     $description: String
     $priceCents: Int
+    $image: String
+    $largeImage: String
   ) {
     updateItem(
       id: $id
       title: $title
       description: $description
       priceCents: $priceCents
+      image: $image
+      largeImage: $largeImage
     ) {
       id
     }
@@ -36,6 +42,8 @@ const UPDATE_ITEM_MUTATION = gql`
 `;
 
 export default class UpdateItem extends React.Component {
+  // Initialize state to simplify (this.state.prop) checks
+  state = {};
   static propTypes = {
     id: PropTypes.string.isRequired,
   };
@@ -47,6 +55,25 @@ export default class UpdateItem extends React.Component {
     this.setState({ [name]: val });
     // Note that in this component, we're not actually displaying state in the UI. Instead our components are
     // uncontrolled. And we just set the initial value using JSX's defaultValue attribute.
+  };
+
+  uploadFile = async (e) => {
+    console.log('Uploading file...');
+    const files = e.target.files;
+
+    const data = new FormData();
+    data.append('file', files[0]);
+    data.append('upload_preset', 'brianfits');
+
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/eysterbrian/image/upload',
+      { method: 'POST', body: data }
+    );
+    const file = await res.json();
+    this.setState({
+      image: file.secure_url,
+      largeImage: file.eager[0].secure_url,
+    });
   };
 
   updateItem = async (e, updateItemMutation) => {
@@ -87,6 +114,25 @@ export default class UpdateItem extends React.Component {
                         onChange={this.handleChange}
                         defaultValue={data.item.title}
                       />
+                    </label>
+
+                    <label htmlFor="file">
+                      Image
+                      <input
+                        type="file"
+                        id="file"
+                        name="file"
+                        placeholder="Image"
+                        required
+                        onChange={this.uploadFile}
+                      />
+                      {(this.state.image || data.item.image) && (
+                        <img
+                          src={this.state.image || data.item.image}
+                          width="200"
+                          alt="Image Preview"
+                        />
+                      )}
                     </label>
 
                     <label htmlFor="priceCents">
