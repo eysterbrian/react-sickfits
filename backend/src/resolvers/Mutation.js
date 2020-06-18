@@ -1,3 +1,5 @@
+const { forwardTo } = require('prisma-binding');
+
 const Mutation = {
   createItem: async function(parent, args, ctx, info) {
     // TODO: Check that the user is logged-in
@@ -29,6 +31,24 @@ const Mutation = {
     );
 
     return item;
+  },
+
+  deleteItem: async function(parent, args, ctx, info) {
+    const where = { id: args.id };
+
+    // 1. Find the item
+    // 2. Check if they own that item or have admin permissions
+    // TODO:
+    const item = await ctx.db.query.item(
+      { where },
+      `{id title}` // Specify the return values from prisma via gql
+    );
+
+    // 3. Delete it
+    return await ctx.db.mutation.deleteItem(
+      { where },
+      info // Prisma uses the original query to determine retval payload
+    );
   },
 };
 
