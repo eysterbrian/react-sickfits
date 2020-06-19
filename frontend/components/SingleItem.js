@@ -5,6 +5,7 @@ import { Query } from 'react-apollo';
 import styled from 'styled-components';
 import Head from 'next/head';
 import ErrorMessages from './ErrorMessage';
+import { STORE_NAME } from '../config';
 
 const SingleItemStyles = styled.div`
   max-width: 1200px;
@@ -53,7 +54,9 @@ class SingleItem extends React.Component {
           return (
             <SingleItemStyles>
               <Head>
-                <title>Brian Fits | {item.title}</title>
+                <title>
+                  {STORE_NAME} | {item.title}
+                </title>
               </Head>
               <img src={item.largeImage} alt={item.title} />
               <div className="details">

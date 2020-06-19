@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 import Nav from './Nav';
+import { STORE_NAME } from '../config';
 
 import Router from 'next/router';
 import NProgress from 'nprogress';
@@ -23,13 +24,13 @@ const Logo = styled.h1`
   z-index: 2;
   transform: skew(-7deg);
   a {
-    background: ${props => props.theme.red};
+    background: ${(props) => props.theme.red};
     color: white;
     padding: 0.5rem 1rem;
     text-transform: uppercase;
     text-decoration: none;
   }
-  @media (max-width: ${props => props.theme.breakMaxWidth}) {
+  @media (max-width: ${(props) => props.theme.breakMaxWidth}) {
     margin: 0;
     text-align: center;
   }
@@ -37,12 +38,12 @@ const Logo = styled.h1`
 
 const StyledHeader = styled.header`
   .bar {
-    border-bottom: 10px solid ${props => props.theme.black};
+    border-bottom: 10px solid ${(props) => props.theme.black};
     display: grid;
     grid-template-columns: auto 1fr;
     justify-content: space-between;
     align-items: stretch;
-    @media (max-width: ${props => props.theme.breakMaxWidth}) {
+    @media (max-width: ${(props) => props.theme.breakMaxWidth}) {
       grid-template-columns: 1fr;
       justify-content: center;
     }
@@ -50,7 +51,7 @@ const StyledHeader = styled.header`
   .sub-bar {
     display: grid;
     grid-template-columns: 1fr auto;
-    border-bottom: 1px solid ${props => props.theme.lightgrey};
+    border-bottom: 1px solid ${(props) => props.theme.lightgrey};
   }
 `;
 
@@ -59,7 +60,7 @@ const Header = () => (
     <div className="bar">
       <Logo>
         <Link href="/">
-          <a>Sick Fits</a>
+          <a>{STORE_NAME}</a>
         </Link>
       </Logo>
       <Nav />
