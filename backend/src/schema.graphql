@@ -18,6 +18,9 @@ type Mutation {
     largeImage: String
   ): Item!
   deleteItem(id: ID!): Item
+
+  # Type of User comes from prisma.graphql
+  signup(email: String!, password: String!, name: String!): User!
 }
 
 type Query {

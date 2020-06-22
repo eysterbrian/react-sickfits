@@ -1,6 +1,8 @@
 //
 // Main entrypoint for the backend server
 //
+const cookieParser = require('cookie-parser');
+
 require('dotenv').config({ path: 'variables.env' });
 
 // Connect to our DB using prisma-binding to our Prisma DB
@@ -10,7 +12,9 @@ const db = require('./db');
 const createServer = require('./createServer'); // graphql-yoga
 const server = createServer();
 
-// TODO: Use express middlware to handle cookies (JWT)
+// Use express middlware to handle cookies (JWT)
+server.express.use(cookieParser());
+
 // TODO: Use express middleware to populate current user
 
 const yogaOptions = {

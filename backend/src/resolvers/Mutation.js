@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { forwardTo } = require('prisma-binding');
 
 const Mutation = {
@@ -49,6 +51,37 @@ const Mutation = {
       { where },
       info // Prisma uses the original query to determine retval payload
     );
+  },
+
+  signup: async function(parent, args, ctx, info) {
+    args.email = args.email.toLowerCase();
+
+    // Hash their password.  10 is the length of the salt (which gets stored with the hash)
+    const password = await bcrypt.hash(args.password, 10);
+
+    // Write the user to the Prisma DB
+    const user = await ctx.db.mutation.createUser(
+      {
+        data: {
+          ...args,
+          password: password, // overwrite the args.password with the hashed value
+          permissions: { set: ['USER'] }, // See the UserCreatepermissionsInput type
+        },
+      },
+      info // Info contains the original gql query, used to determine specific return args
+    );
+
+    // Now create the JWT token
+    const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+
+    // Set the JWT as a cookie on the response
+    ctx.response.cookie('token', token, {
+      httpOnly: true, // don't allow JS to access the JWT cookie
+      maxAge: 1000 * 60 * 60, // 1 hour expiration
+    });
+
+    // Finally, return the User to the browser
+    return user;
   },
 };
 
