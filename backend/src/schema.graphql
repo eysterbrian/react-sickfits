@@ -1,6 +1,10 @@
 # Sketchy way that Prisma handles imports from another .graphql file...
 # import * from './generated/prisma.graphql'
 
+type SuccessMessage {
+  message: String
+}
+
 type Mutation {
   createItem(
     title: String
@@ -22,6 +26,7 @@ type Mutation {
   # Type of User comes from prisma.graphql
   signup(email: String!, password: String!, name: String!): User!
   signin(email: String!, password: String!): User!
+  signout: SuccessMessage
 }
 
 type Query {

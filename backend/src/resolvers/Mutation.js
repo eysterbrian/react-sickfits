@@ -110,6 +110,14 @@ const Mutation = {
     // TODO: Shouldn't we return just the return fields from the Query???
     return user;
   },
+
+  signout: async function(parent, args, ctx, info) {
+    // Remove any token cookie from the client
+    ctx.response.clearCookie('token');
+
+    // Return a SuccessMessage
+    return { message: 'Successfully signed out!' };
+  },
 };
 
 module.exports = Mutation;
