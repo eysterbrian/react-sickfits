@@ -77,10 +77,37 @@ const Mutation = {
     // Set the JWT as a cookie on the response
     ctx.response.cookie('token', token, {
       httpOnly: true, // don't allow JS to access the JWT cookie
-      maxAge: 1000 * 60 * 60, // 1 hour expiration
+      maxAge: 1000 * 60 * 60 * 24, // 1 day expiration
     });
 
     // Finally, return the User to the browser
+    return user;
+  },
+
+  signin: async function(parent, { email, password }, ctx, info) {
+    // Check that a user exists with that email
+    const user = await ctx.db.query.user({ where: { email } });
+    if (!user) {
+      throw new Error(`No user found for email ${email}`);
+    }
+
+    // Check that their password is correct
+    const validPass = await bcrypt.compare(password, user.password);
+    if (!validPass) {
+      throw new Error(`Invalid password`);
+    }
+
+    // Create a JWT for their logged-in user
+    const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+
+    // Set the token in their cookies
+    ctx.response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day expiration
+    });
+
+    // Return the user
+    // TODO: Shouldn't we return just the return fields from the Query???
     return user;
   },
 };

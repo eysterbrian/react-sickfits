@@ -28,7 +28,10 @@ class Signup extends React.Component {
   };
   render() {
     return (
-      <Mutation mutation={SIGNUP_MUTATION}>
+      <Mutation
+        mutation={SIGNUP_MUTATION}
+        refetchQueries={['CURRENT_USER_QUERY']}
+      >
         {(signupMutation, { loading, error }) => {
           return (
             <Form
