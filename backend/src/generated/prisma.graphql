@@ -19,6 +19,7 @@ type Item {
   image: String
   largeImage: String
   priceCents: Int!
+  user: User!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -30,12 +31,12 @@ type ItemConnection {
 }
 
 input ItemCreateInput {
-  id: ID
   title: String!
   description: String!
   image: String
   largeImage: String
   priceCents: Int!
+  user: UserCreateOneInput!
 }
 
 type ItemEdge {
@@ -97,14 +98,7 @@ input ItemUpdateInput {
   image: String
   largeImage: String
   priceCents: Int
-}
-
-input ItemUpdateManyMutationInput {
-  title: String
-  description: String
-  image: String
-  largeImage: String
-  priceCents: Int
+  user: UserUpdateOneRequiredInput
 }
 
 input ItemWhereInput {
@@ -186,6 +180,7 @@ input ItemWhereInput {
   priceCents_lte: Int
   priceCents_gt: Int
   priceCents_gte: Int
+  user: UserWhereInput
   createdAt: DateTime
   createdAt_not: DateTime
   createdAt_in: [DateTime!]
@@ -216,13 +211,13 @@ scalar Long
 type Mutation {
   createItem(data: ItemCreateInput!): Item!
   updateItem(data: ItemUpdateInput!, where: ItemWhereUniqueInput!): Item
-  updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
+  updateManyItems(data: ItemUpdateInput!, where: ItemWhereInput): BatchPayload!
   upsertItem(where: ItemWhereUniqueInput!, create: ItemCreateInput!, update: ItemUpdateInput!): Item!
   deleteItem(where: ItemWhereUniqueInput!): Item
   deleteManyItems(where: ItemWhereInput): BatchPayload!
   createUser(data: UserCreateInput!): User!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   deleteUser(where: UserWhereUniqueInput!): User
   deleteManyUsers(where: UserWhereInput): BatchPayload!
@@ -248,10 +243,10 @@ type PageInfo {
 enum Permission {
   ADMIN
   USER
-  ITEM_CREATE
-  ITEM_UPDATE
-  ITEM_DELETE
-  PERMISSION_UPDATE
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
 }
 
 type Query {
@@ -286,13 +281,17 @@ type UserConnection {
 }
 
 input UserCreateInput {
-  id: ID
   name: String!
   email: String!
   password: String!
   resetToken: String
   resetTokenExpiry: Float
   permissions: UserCreatepermissionsInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreatepermissionsInput {
@@ -317,6 +316,10 @@ enum UserOrderByInput {
   resetToken_DESC
   resetTokenExpiry_ASC
   resetTokenExpiry_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type UserPreviousValues {
@@ -347,6 +350,15 @@ input UserSubscriptionWhereInput {
   NOT: [UserSubscriptionWhereInput!]
 }
 
+input UserUpdateDataInput {
+  name: String
+  email: String
+  password: String
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: UserUpdatepermissionsInput
+}
+
 input UserUpdateInput {
   name: String
   email: String
@@ -356,17 +368,20 @@ input UserUpdateInput {
   permissions: UserUpdatepermissionsInput
 }
 
-input UserUpdateManyMutationInput {
-  name: String
-  email: String
-  password: String
-  resetToken: String
-  resetTokenExpiry: Float
-  permissions: UserUpdatepermissionsInput
+input UserUpdateOneRequiredInput {
+  create: UserCreateInput
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+  connect: UserWhereUniqueInput
 }
 
 input UserUpdatepermissionsInput {
   set: [Permission!]
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserWhereInput {

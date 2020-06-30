@@ -4,8 +4,8 @@ datamodel: datamodel.graphql
 
 generate:
   - generator: graphql-schema
-    output: ./src/generated/prisma.graphql
-# Since prisma 1.31 the client is generated automaticaly after `prisma deploy` so remove this...
-# hooks:
-#   post-deploy:
-#     - prisma generate
+    output: ./src/generated/
+
+hooks:
+  post-deploy:
+    - prisma generate
