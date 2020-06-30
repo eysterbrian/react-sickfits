@@ -43,6 +43,7 @@ class Signin extends React.Component {
               <fieldset disabled={loading} aria-busy={loading}>
                 <h2>Login to Your Account</h2>
                 <label htmlFor="email">
+                  Email
                   <input
                     type="email"
                     id="email"
@@ -54,6 +55,7 @@ class Signin extends React.Component {
                   />
                 </label>
                 <label htmlFor="password">
+                  Password
                   <input
                     type="password"
                     id="password"
