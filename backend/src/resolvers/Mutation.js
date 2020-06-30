@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { forwardTo } = require('prisma-binding');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
+const { transport, makeHtmlEmail } = require('../../mail');
 
 const RESET_EXPIRY = 1000 * 60 * 60; // 1 hour
 const LOGIN_EXPIRY = 1000 * 60 * 60 * 24; // 1 day
@@ -139,6 +140,24 @@ const Mutation = {
       data: { resetToken, resetTokenExpiry },
     });
     console.log(res);
+
+    // Generate and send the password reset email
+    const resetUrl = `${
+      process.env.FRONTEND_URL
+    }/reset?resetToken=${resetToken}`;
+    const msgText = `Your password reset token is: \n\n <a href="${resetUrl}">${resetUrl}</a>`;
+    try {
+      const mailRes = await transport.sendMail({
+        from: 'brian@brianeyster.com',
+        to: user.email,
+        subject: 'Password Reset',
+        html: makeHtmlEmail(msgText),
+        text: msgText,
+      });
+    } catch (err) {
+      throw new Error(`Unable to send email to ${user.email}!`);
+    }
+
     return { message: 'Reset token generated!' };
   },
 
