@@ -11,6 +11,9 @@ const LOGIN_EXPIRY = 1000 * 60 * 60 * 24; // 1 day
 const Mutation = {
   createItem: async function(parent, args, ctx, info) {
     // TODO: Check that the user is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to create a new item');
+    }
 
     // Call the Prisma DB mutation
     const item = await ctx.db.mutation.createItem({
@@ -18,6 +21,13 @@ const Mutation = {
       data: {
         // We're using spread here so we can later add some additional params to data
         ...args,
+
+        // Provide a relationship between this item and a user
+        user: {
+          connect: {
+            id: ctx.request.userId,
+          },
+        },
       },
     });
 
