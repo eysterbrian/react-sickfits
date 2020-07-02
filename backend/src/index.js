@@ -32,6 +32,22 @@ server.express.use((req, res, next) => {
   next();
 });
 
+// If the userId has been set on the request then get the entire User obj and add to the request
+server.express.use(async (req, res, next) => {
+  if (!req.userId) return next();
+
+  const user = await db.query.user(
+    {
+      where: {
+        id: req.userId,
+      },
+    },
+    '{id email name permissions}'
+  );
+  if (user) req.user = user;
+  next();
+});
+
 const yogaOptions = {
   cors: {
     credentials: true,

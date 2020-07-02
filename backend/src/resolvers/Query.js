@@ -1,4 +1,8 @@
 const { forwardTo } = require('prisma-binding');
+const {
+  unusedFragMessage,
+} = require('graphql/validation/rules/NoUnusedFragments');
+const { hasPermission } = require('../utils');
 
 const Query = {
   // Use the prisma-binding forwardTo() to delegate this query directly to Prisma DB
@@ -19,6 +23,23 @@ const Query = {
       info
     );
     return user;
+  },
+
+  async users(parent, args, ctx, info) {
+    // Verify that some user is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged-in');
+    }
+
+    if (
+      ctx.request.user &&
+      hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE'])
+    ) {
+      const users = await ctx.db.query.users({}, info);
+      return users;
+    } else {
+      return [];
+    }
   },
 };
 
