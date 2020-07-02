@@ -1,5 +1,6 @@
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
 import ErrorMessages from './ErrorMessage';
 import Table from './styles/Table';
 import SickButton from './styles/SickButton';
@@ -45,8 +46,6 @@ class EditPermissions extends React.Component {
           if (loading) return <p>Loading...</p>;
           if (error) return <ErrorMessages error={error} />;
           else {
-            console.log(data);
-
             return (
               <div>
                 <h2>Manage Permissions</h2>
@@ -56,14 +55,14 @@ class EditPermissions extends React.Component {
                       <th>Name</th>
                       <th>Email</th>
                       {PERMISSIONS.map((permission) => (
-                        <th>{permission}</th>
+                        <th key={permission}>{permission}</th>
                       ))}
                       <th>Update</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.users.map((user) => (
-                      <UserPermissions user={user} />
+                      <UserPermissions key={user.id} user={user} />
                     ))}
                   </tbody>
                 </Table>
@@ -77,6 +76,29 @@ class EditPermissions extends React.Component {
 }
 
 class UserPermissions extends React.Component {
+  static propTypes = {
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      permissions: PropTypes.array.isRequired,
+    }).isRequired,
+  };
+  state = {
+    permissions: this.props.user.permissions,
+  };
+  handlePermissionChange = (evt) => {
+    const checkbox = evt.target;
+    let updatedPermissions = [...this.state.permissions];
+    if (evt.target.checked) {
+      updatedPermissions.push(evt.target.value);
+    } else {
+      updatedPermissions = updatedPermissions.filter(
+        (permission) => permission !== evt.target.value
+      );
+    }
+    this.setState({ permissions: updatedPermissions });
+  };
   render() {
     const user = this.props.user;
     return (
@@ -86,13 +108,15 @@ class UserPermissions extends React.Component {
         {PERMISSIONS.map((permission) => {
           const inputName = `${user.id}-permission-${permission}`;
           return (
-            <td>
+            <td key={inputName}>
               <label htmlFor={inputName}>
                 <input
                   type="checkbox"
                   name={inputName}
                   id={inputName}
-                  defaultChecked={user.permissions.includes(permission)}
+                  checked={this.state.permissions.includes(permission)}
+                  value={permission}
+                  onChange={this.handlePermissionChange}
                 />
               </label>
             </td>
