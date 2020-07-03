@@ -4,6 +4,7 @@ const { forwardTo } = require('prisma-binding');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeHtmlEmail } = require('../../mail');
+const { hasPermission } = require('../utils');
 
 const RESET_EXPIRY = 1000 * 60 * 60; // 1 hour
 const LOGIN_EXPIRY = 1000 * 60 * 60 * 24; // 1 day
@@ -216,6 +217,33 @@ const Mutation = {
     // Return the User
     console.log(updatedUser);
     return updatedUser;
+  },
+
+  async updatePermissions(parent, args, ctx, info) {
+    // Verify that user is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in!');
+    }
+
+    // Does current user have permissions to allow this kind of update?
+    if (
+      !ctx.request.user ||
+      !hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE'])
+    ) {
+      throw new Error('Sorry, you are not allowed to update user permissions.');
+    }
+
+    // Update the user in the DB
+    return ctx.db.mutation.updateUser(
+      {
+        where: { id: args.userId },
+        data: {
+          // Since this is custom enum, Prisma requires us to call { set: value }
+          permissions: { set: args.permissions },
+        },
+      },
+      info
+    );
   },
 };
 
