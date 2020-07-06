@@ -44,8 +44,9 @@ export default class DeleteItem extends React.Component {
             <button
               onClick={async (e) => {
                 if (confirm('Are you sure you want to delete?')) {
-                  console.log('Deleting an item...');
-                  const res = await deleteItemMutation();
+                  deleteItemMutation().catch((err) => {
+                    alert(err.message);
+                  });
                   console.log('Item deleted!!!');
                 }
               }}

@@ -53,19 +53,29 @@ const Mutation = {
   },
 
   deleteItem: async function(parent, args, ctx, info) {
-    const where = { id: args.id };
+    // Make sure the user is logged in
+    if (!ctx.request.userId || !ctx.request.user) {
+      throw new Error('You must be logged in to delete an item');
+    }
 
-    // 1. Find the item
-    // 2. Check if they own that item or have admin permissions
-    // TODO:
+    // Find the item
     const item = await ctx.db.query.item(
-      { where },
-      `{id title}` // Specify the return values from prisma via gql
+      { where: { id: args.id } },
+      `{id title user { id }}` // Specify the return values from prisma via gql
     );
 
-    // 3. Delete it
+    // Check if they own that item or have admin permissions
+    const userOwnsItem = ctx.request.userId === item.user.id;
+    const userHasPermissions = ctx.request.user.permissions.some((permission) =>
+      ['ADMIN', 'ITEMDELETE'].includes(permission)
+    );
+    if (!userOwnsItem && !userHasPermissions) {
+      throw new Error('You do not have permissions to delete this item');
+    }
+
+    // Delete it
     return await ctx.db.mutation.deleteItem(
-      { where },
+      { where: { id: args.id } },
       info // Prisma uses the original query to determine retval payload
     );
   },
