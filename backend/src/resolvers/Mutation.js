@@ -290,6 +290,27 @@ const Mutation = {
       info
     );
   },
+  async removeFromCart(parent, { itemId }, ctx, info) {
+    // Find the CartItem
+    const cartItem = await ctx.db.query.cartItem(
+      { where: { id: itemId } },
+      '{ id, user { id }}'
+    );
+
+    if (!cartItem) {
+      throw new Error(
+        'Unable to delete item from cart. CartItem does not exist.'
+      );
+    }
+
+    // Make sure the user owns this CartItem
+    if (ctx.request.userId !== cartItem.user.id) {
+      throw new Error('This item is not in your cart. Unable to remove!');
+    }
+
+    // Delete the CartItem
+    return ctx.db.mutation.deleteCartItem({ where: { id: itemId } }, info);
+  },
 };
 
 module.exports = Mutation;
