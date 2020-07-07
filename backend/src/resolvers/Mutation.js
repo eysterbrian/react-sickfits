@@ -255,6 +255,41 @@ const Mutation = {
       info
     );
   },
+
+  async addToCart(parent, { itemId }, ctx, info) {
+    // Make sure user is logged in
+    if (!ctx.request.userId || !ctx.request.user) {
+      throw new Error('You must be logged-in to add items to your cart');
+    }
+
+    // Is item already in the user's cart
+    const [existingCartItem] = await ctx.db.query.cartItems({
+      where: { user: { id: ctx.request.userId }, item: { id: itemId } },
+    });
+    if (existingCartItem) {
+      console.log("Item is already in user's cart");
+      return ctx.db.mutation.updateCartItem(
+        {
+          where: { id: existingCartItem.id },
+          data: { quantity: existingCartItem.quantity + 1 },
+        },
+        info
+      );
+    }
+
+    // Add CartItem to user's cart
+    console.log('Adding item to cart...');
+    return ctx.db.mutation.createCartItem(
+      {
+        data: {
+          quantity: 1,
+          user: { connect: { id: ctx.request.userId } },
+          item: { connect: { id: itemId } },
+        },
+      },
+      info
+    );
+  },
 };
 
 module.exports = Mutation;
