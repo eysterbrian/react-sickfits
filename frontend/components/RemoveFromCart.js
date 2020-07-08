@@ -42,6 +42,13 @@ const RemoveFromCart = ({ itemId }) => {
       mutation={REMOVE_FROM_CART_MUTATION}
       variables={{ itemId }}
       update={updateCache}
+      optimisticResponse={{
+        __typename: 'Mutation',
+        removeFromCart: {
+          __typename: 'CartItem',
+          id: itemId,
+        },
+      }}
     >
       {(removeFromCartMutation, { loading, data }) => (
         <RemoveFromCartStyles
