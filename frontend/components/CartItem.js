@@ -19,20 +19,32 @@ const CartItemStyles = styled.li`
   }
 `;
 
-const CartItem = ({ cartItem }) => (
-  <CartItemStyles>
-    <img src={cartItem.item.image} height="100px" alt={cartItem.item.title} />
-    <div className="cart-item-details">
-      <h3>{cartItem.item.title}</h3>
-      <p>
-        {formatMoney(cartItem.item.priceCents * cartItem.quantity)}
-        {<> &mdash; </>}
-        {cartItem.quantity} &times; {formatMoney(cartItem.item.priceCents)} each
-      </p>
-    </div>
-    <RemoveFromCart itemId={cartItem.id} />
-  </CartItemStyles>
-);
+const CartItem = ({ cartItem }) => {
+  if (!cartItem.item) {
+    return (
+      <CartItemStyles>
+        <p>This item is no longer available</p>
+        <div></div>
+        <RemoveFromCart itemId={cartItem.id} />
+      </CartItemStyles>
+    );
+  }
+  return (
+    <CartItemStyles>
+      <img src={cartItem.item.image} height="100px" alt={cartItem.item.title} />
+      <div className="cart-item-details">
+        <h3>{cartItem.item.title}</h3>
+        <p>
+          {formatMoney(cartItem.item.priceCents * cartItem.quantity)}
+          {<> &mdash; </>}
+          {cartItem.quantity} &times; {formatMoney(cartItem.item.priceCents)}{' '}
+          each
+        </p>
+      </div>
+      <RemoveFromCart itemId={cartItem.id} />
+    </CartItemStyles>
+  );
+};
 
 CartItem.propTypes = {
   cartItem: PropTypes.object.isRequired,

@@ -18,7 +18,7 @@ type CartItem {
   id: ID!
   quantity: Int!
   user: User!
-  item: Item!
+  item: Item
 }
 
 type CartItemConnection {
@@ -30,7 +30,7 @@ type CartItemConnection {
 input CartItemCreateInput {
   quantity: Int
   user: UserCreateOneWithoutCartInput!
-  item: ItemCreateOneInput!
+  item: ItemCreateOneInput
 }
 
 input CartItemCreateManyWithoutUserInput {
@@ -40,7 +40,7 @@ input CartItemCreateManyWithoutUserInput {
 
 input CartItemCreateWithoutUserInput {
   quantity: Int
-  item: ItemCreateOneInput!
+  item: ItemCreateOneInput
 }
 
 type CartItemEdge {
@@ -85,7 +85,7 @@ input CartItemSubscriptionWhereInput {
 input CartItemUpdateInput {
   quantity: Int
   user: UserUpdateOneRequiredWithoutCartInput
-  item: ItemUpdateOneRequiredInput
+  item: ItemUpdateOneInput
 }
 
 input CartItemUpdateManyWithoutUserInput {
@@ -99,7 +99,7 @@ input CartItemUpdateManyWithoutUserInput {
 
 input CartItemUpdateWithoutUserDataInput {
   quantity: Int
-  item: ItemUpdateOneRequiredInput
+  item: ItemUpdateOneInput
 }
 
 input CartItemUpdateWithWhereUniqueWithoutUserInput {
@@ -252,10 +252,12 @@ input ItemUpdateInput {
   user: UserUpdateOneRequiredInput
 }
 
-input ItemUpdateOneRequiredInput {
+input ItemUpdateOneInput {
   create: ItemCreateInput
   update: ItemUpdateDataInput
   upsert: ItemUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
   connect: ItemWhereUniqueInput
 }
 
