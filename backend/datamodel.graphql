@@ -36,3 +36,22 @@ type CartItem {
   user: User! # relationship to a User
   item: Item # Item might be null if it has been deleted.
 }
+
+type OrderItem {
+  id: ID! @id @unique
+  title: String!
+  description: String!
+  image: String
+  largeImage: String
+  priceCents: Int!
+  quantity: Int! @default(value: 1)
+  user: User
+}
+
+type Order {
+  id: ID! @id @unique
+  items: [OrderItem!]!
+  total: Int!
+  user: User!
+  charge: String!
+}

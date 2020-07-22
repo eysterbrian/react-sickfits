@@ -5,6 +5,7 @@ const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeHtmlEmail } = require('../../mail');
 const { hasPermission } = require('../utils');
+const stripe = require('../stripe');
 
 const RESET_EXPIRY = 1000 * 60 * 60; // 1 hour
 const LOGIN_EXPIRY = 1000 * 60 * 60 * 24; // 1 day
@@ -310,6 +311,49 @@ const Mutation = {
 
     // Delete the CartItem
     return ctx.db.mutation.deleteCartItem({ where: { id: itemId } }, info);
+  },
+  async createOrder(parent, { token }, ctx, info) {
+    // Make sure uesr is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged-in to complete this order');
+    }
+    const user = await ctx.db.query.user(
+      { where: { id: ctx.request.userId } },
+      `{ 
+        id 
+        name 
+        email 
+        cart { 
+          id 
+          quantity 
+          item { id title description image largeImage priceCents } 
+        } 
+      }`
+    );
+
+    // Calculate the current price from the user's cart
+    const totalPrice = user.cart.reduce((total, cartItem) => {
+      if (!cartItem.item) return 0;
+      return total + cartItem.quantity * cartItem.item.priceCents;
+    }, 0);
+
+    console.log(`About to charge for a total of: ${totalPrice}`);
+
+    // Create a Stripe Charge
+    const stripeCharge = await stripe.charges.create({
+      amount: totalPrice,
+      currency: 'USD',
+      source: token,
+    });
+
+    // TODO: Finish implementing this mutation!!!
+
+    // Create OrderItems from the CartItems
+    // let orderItems;
+
+    // Create an Order
+    // Clean up - clear the user's cart, delete CartItems
+    // Return the Order
   },
 };
 
