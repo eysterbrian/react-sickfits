@@ -26,7 +26,7 @@ const CREATE_ORDER_MUTATION = gql`
 `;
 
 function totalItems(cart) {
-  return cart.reduce((total, cartItem) => total + cartItem.quantity, 0);
+  return cart && cart.reduce((total, cartItem) => total + cartItem.quantity, 0);
 }
 
 class TakeMyMoney extends React.Component {
@@ -37,6 +37,7 @@ class TakeMyMoney extends React.Component {
     }).catch((err) => {
       alert(err.message);
     });
+    console.log(order);
   };
   render() {
     return (
@@ -51,7 +52,9 @@ class TakeMyMoney extends React.Component {
                 amount={calcTotalPrice(me.cart)}
                 name={STORE_NAME}
                 description={`Order of ${totalItems(me.cart)} items`}
-                image={me.cart[0].item && me.cart[0].item.image}
+                image={
+                  me.cart.length && me.cart[0].item && me.cart[0].item.image
+                }
                 stripeKey="pk_test_51H2m1BBtyuoRneQFdQUsTEJKESJaKaYU3wMpDuOOQyEa6dS86TsAg24VNcJNiWHBKGdKOidJT4IiMFlye3lknYKK00z4M59Y6Q"
                 currency="USD"
                 email={me.email}

@@ -346,14 +346,40 @@ const Mutation = {
       source: token,
     });
 
-    // TODO: Finish implementing this mutation!!!
+    // Create an array of OrderItem inputs from the CartItems
+    const orderItemsInput = user.cart.map((cartItem) => {
+      // Return an obj of type OrderItemCreateInput
+      return {
+        // Could also use the ...cartItem.item to copy all the fields from cartItem.item, but then we'd have to delete
+        //  the id field (which would also come from cartItem.item.id)
+        title: cartItem.item.title,
+        description: cartItem.item.description,
+        image: cartItem.item.image,
+        largeImage: cartItem.item.largeImage,
+        priceCents: cartItem.item.priceCents,
+        quantity: cartItem.quantity,
+        user: { connect: { id: ctx.request.userId } },
+      };
+    });
 
-    // Create OrderItems from the CartItems
-    // let orderItems;
+    // Create the Order in Prisma
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: stripeCharge.amount,
+        charge: stripeCharge.id,
+        items: { create: orderItemsInput },
+        user: { connect: { id: ctx.request.userId } },
+      },
+    });
 
-    // Create an Order
-    // Clean up - clear the user's cart, delete CartItems
+    // Clean up
+    // delete all the CartItems for this user
+    await ctx.db.mutation.deleteManyCartItems({
+      where: { user: { id: ctx.request.userId } },
+    });
+
     // Return the Order
+    return order;
   },
 };
 
