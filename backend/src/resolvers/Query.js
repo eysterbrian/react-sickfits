@@ -41,6 +41,31 @@ const Query = {
       return [];
     }
   },
+
+  async order(parent, args, ctx, info) {
+    // Verify that some user is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged-in');
+    }
+
+    // Get the order
+    const order = await ctx.db.query.order(
+      {
+        where: { id: args.id },
+      },
+      info
+    );
+
+    // Does this user have permissions to view this order?
+    if (
+      !hasPermission(ctx.request.user, ['ADMIN']) &&
+      order.user.id !== ctx.request.userId
+    ) {
+      throw new Error('You do not have permissions to view this order');
+    }
+
+    return order;
+  },
 };
 
 module.exports = Query;
