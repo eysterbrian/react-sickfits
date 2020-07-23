@@ -45,7 +45,7 @@ const Query = {
   async order(parent, args, ctx, info) {
     // Verify that some user is logged-in
     if (!ctx.request.userId) {
-      throw new Error('You must be logged-in');
+      throw new Error('You must be logged-in to view this order');
     }
 
     // Get the order
@@ -65,6 +65,22 @@ const Query = {
     }
 
     return order;
+  },
+
+  async orders(parent, args, ctx, info) {
+    // Verify that user is logged-in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged-in to view orders');
+    }
+
+    // Get the orders for this user
+    return ctx.db.query.orders(
+      {
+        where: { user: { id: ctx.request.userId } },
+        orderBy: args.orderBy,
+      },
+      info
+    );
   },
 };
 
