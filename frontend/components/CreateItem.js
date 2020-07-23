@@ -39,7 +39,6 @@ export default class CreateItem extends React.Component {
     const { name, type, value } = e.target;
     const val = type === 'number' ? Number(value) : value;
     this.setState({ [name]: val });
-    console.log({ name, type, value });
   };
 
   uploadFile = async (e) => {

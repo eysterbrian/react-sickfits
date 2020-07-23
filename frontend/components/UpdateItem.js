@@ -79,7 +79,6 @@ export default class UpdateItem extends React.Component {
   updateItem = async (e, updateItemMutation) => {
     e.preventDefault();
     console.log('Updating item...');
-    console.log(this.state);
     const res = await updateItemMutation({
       variables: {
         id: this.props.id,
