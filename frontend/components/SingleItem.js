@@ -72,3 +72,4 @@ class SingleItem extends React.Component {
 }
 
 export default SingleItem;
+export { SINGLE_ITEM_QUERY };

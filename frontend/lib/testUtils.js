@@ -1,12 +1,12 @@
 import casual from 'casual';
 
 // seed it so we get consistent results
-casual.seed(777);
+casual.seed(701);
 
 const fakeItem = () => ({
   __typename: 'Item',
   id: 'abc123',
-  price: 5000,
+  priceCents: 5000,
   user: null,
   image: 'dog-small.jpg',
   title: 'dogs are best',
@@ -29,7 +29,7 @@ const fakeOrderItem = () => ({
   id: casual.uuid,
   image: `${casual.word}.jpg`,
   title: casual.words(),
-  price: 4234,
+  priceCents: 4234,
   quantity: 1,
   description: casual.words(),
 });
@@ -44,7 +44,7 @@ const fakeOrder = () => ({
   user: fakeUser(),
 });
 
-const fakeCartItem = overrides => ({
+const fakeCartItem = (overrides) => ({
   __typename: 'CartItem',
   id: 'omg123',
   quantity: 3,
